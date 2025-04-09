@@ -3,7 +3,8 @@ const ProductType = require("../models/productTypeModel");
 
 exports.createDistribution = async (req, res) => {
   try {
-    const { agent, storeName, product, boxCount } = req.body;
+    const { agent, storeName, product, boxCount, partialPaymentUnits } =
+      req.body;
 
     // Mahsulotni topish
     const productType = await ProductType.findById(product);
@@ -17,12 +18,17 @@ exports.createDistribution = async (req, res) => {
         ? boxCount * productType.unitsPerBox
         : boxCount;
 
+    // Nasiyaga qolgan donalarni hisoblash
+    const remainingDebtUnits = totalUnits - (partialPaymentUnits || totalUnits);
+
     const newDistribution = new Distribution({
       agent,
       storeName,
       product,
       boxCount,
       totalUnits,
+      partialPaymentUnits: partialPaymentUnits || 0,
+      remainingDebtUnits,
     });
 
     await newDistribution.save();
@@ -38,6 +44,31 @@ exports.getAllDistributions = async (req, res) => {
       .populate("agent")
       .populate("product");
     res.status(200).json(distributions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateDistribution = async (req, res) => {
+  try {
+    const { partialPaymentUnits } = req.body;
+
+    const distribution = await Distribution.findById(req.params.id);
+    if (!distribution) {
+      return res.status(404).json({ message: "Distribution not found" });
+    }
+
+    // Qolgan qarzni hisoblash
+    const remainingDebtUnits =
+      distribution.totalUnits -
+      (partialPaymentUnits || distribution.partialPaymentUnits);
+
+    distribution.partialPaymentUnits =
+      partialPaymentUnits || distribution.partialPaymentUnits;
+    distribution.remainingDebtUnits = remainingDebtUnits;
+
+    await distribution.save();
+    res.status(200).json(distribution);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -8,12 +8,12 @@ const DC = require("../controllers/distributionController"); // Mahsulot tarqati
 const authMiddleware = require("../middleware/authMiddleware");
 
 // Foydalanuvchi marshrutlari
-router.post("/register", authMiddleware, userController.createUser); // Ro'yxatdan o'tish
+router.post("/register", userController.createUser); // Ro'yxatdan o'tish
 router.get("/users", authMiddleware, userController.getAllUsers); // Foydalanuvchilar ro'yxati
 router.get("/user/:id", authMiddleware, userController.getUserById); // ID bo'yicha foydalanuvchi
 router.put("/user/:id", authMiddleware, userController.updateUser); // Foydalanuvchini yangilash
 router.delete("/user/:id", authMiddleware, userController.deleteUser); // Foydalanuvchini o'chirish
-
+router.post("/login", userController.loginUser);
 // Agent marshrutlari
 router.post("/agents", authMiddleware, agentController.createAgent); // Agent yaratish
 router.get("/agents", authMiddleware, agentController.getAllAgents); // Agentlar ro'yxati

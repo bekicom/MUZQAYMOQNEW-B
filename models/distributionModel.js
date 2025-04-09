@@ -4,29 +4,37 @@ const distributionSchema = new mongoose.Schema(
   {
     agent: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Agent", // Agent bilan bog'lanadi
+      ref: "Agent",
       required: true,
     },
     storeName: {
-      type: String, // Do'kon nomi
+      type: String,
       required: true,
     },
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ProductType", // Mahsulot turi bilan bog'lanadi
+      ref: "ProductType",
       required: true,
     },
     boxCount: {
-      type: Number, // Necha karobka
+      type: Number,
       required: true,
     },
     totalUnits: {
-      type: Number, // Karobkadan avtomatik hisoblanadi
+      type: Number,
+      required: true,
+    },
+    partialPaymentUnits: {
+      type: Number, // Qancha dona mahsulot qabul qilindi
+      required: true,
+    },
+    remainingDebtUnits: {
+      type: Number, // Nasiyaga qolgan mahsulot donalari
       required: true,
     },
     distributionDate: {
       type: Date,
-      default: Date.now, // Tarqatish sanasi
+      default: Date.now,
     },
   },
   {
